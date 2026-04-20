@@ -1,4 +1,5 @@
 <?php
+session_start();
 // data buku
 $buku_list = [
     [
@@ -159,11 +160,38 @@ usort($hasil, function($a,$b) use ($sort){
     return $a[$sort] <=> $b[$sort];
 });
 
+// export CSV
+if (isset($_GET['export']) && $_GET['export'] == 'csv') {
+    header('Content-Type: text/csv');
+    header('Content-Disposition: attachment;filename=hasil_buku.csv');
+
+    $output = fopen("php://output", "w");
+    fputcsv($output, ['Kode','Judul','Kategori','Pengarang','Tahun','Harga','Stok']);
+
+    foreach ($hasil_all as $b) {
+        fputcsv($output, $b);
+    }
+
+    fclose($output);
+    exit;
+} 
+
 // pagination
 $per_page = 10;
 $total = count($hasil);
 $start = ($page - 1) * $per_page;
 $hasil = array_slice($hasil, $start, $per_page);
+
+// session recent
+if (!empty($_GET)) {
+    $_SESSION['recent'][] = $_GET;
+}
+
+// highlight function
+function highlight($text, $keyword) {
+    if (!$keyword) return $text;
+    return preg_replace("/($keyword)/i", "<mark>$1</mark>", $text);
+}
 ?>
 
 <!DOCTYPE html>
@@ -190,10 +218,7 @@ $hasil = array_slice($hasil, $start, $per_page);
 
                 <form method="GET">
                     <div class="row g-3">
-                        <div class="col-md-6">
-                            <label>Keyword</label>
-                            <input type="text" name="keyword" class="form-control" value="<?= $keyword ?>">
-                        </div>
+                        <input type="text" name="keyword" class="form-control" placeholder="Keyword" value="<?= $keyword ?>">
 
                         <div class="col-md-6">
                             <label>Kategori</label>
@@ -207,17 +232,17 @@ $hasil = array_slice($hasil, $start, $per_page);
 
                         <div class="col-md-3">
                             <label>Min Harga</label>
-                            <input type="number" name="min_harga" class="form-control" value="<?= $min_harga ?>">
+                            <input type="number" name="min_harga" class="form-control" placeholder="Min Harga" value="<?= $min_harga ?>">
                         </div>
 
                         <div class="col-md-3">
                             <label>Max Harga</label>
-                            <input type="number" name="max_harga" class="form-control" value="<?= $max_harga ?>">
+                            <input type="number" name="max_harga" class="form-control" placeholder="Max Harga" value="<?= $max_harga ?>">
                         </div>
 
                         <div class="col-md-3">
                             <label>Tahun</label>
-                            <input type="number" name="tahun" class="form-control" value="<?= $tahun ?>">
+                            <input type="number" name="tahun" class="form-control" placeholder="Tahun" value="<?= $tahun ?>">
                         </div>
 
                         <div class="col-md-3">
@@ -236,9 +261,8 @@ $hasil = array_slice($hasil, $start, $per_page);
                             <input type="radio" name="status" value="habis" <?= $status=='habis'?'checked':'' ?>> Habis
                         </div>
 
-                        <div class="col-md-12">
                             <button class="btn btn-primary">Cari</button>
-                        </div>
+                            <a href="?export=csv" class="btn btn-success">Export CSV</a>
                     </div>
                 </form>
             </div>
@@ -268,9 +292,9 @@ $hasil = array_slice($hasil, $start, $per_page);
                         <?php foreach($hasil as $b): ?>
                             <tr>
                                 <td><?= $b['kode'] ?></td>
-                                <td><?= $b['judul'] ?></td>
+                                <td><?= highlight($b['judul'], $keyword) ?></td>
                                 <td><?= $b['kategori'] ?></td>
-                                <td><?= $b['pengarang'] ?></td>
+                                <td><?= highlight($b['pengarang'], $keyword) ?></td>
                                 <td><?= $b['tahun'] ?></td>
                                 <td><?= number_format($b['harga']) ?></td>
                                 <td><?= $b['stok'] ?></td>
@@ -278,6 +302,22 @@ $hasil = array_slice($hasil, $start, $per_page);
                         <?php endforeach; ?>
                     </tbody>
                 </table>
+            </div>
+        </div>
+
+        <!--recent search-->
+        <div class="card mt-4">
+            <div class="card-header">Recent Search</div>
+            <div class="card-body">
+                <ul>
+                    <?php
+                    if (!empty($_SESSION['recent'])) {
+                        foreach ($_SESSION['recent'] as $r) {
+                            echo "<li>" . ($r['keyword'] ?? '-') . "</li>";
+                        }
+                    }
+                    ?>
+                </ul>
             </div>
         </div>
     </div>
