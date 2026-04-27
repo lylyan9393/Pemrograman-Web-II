@@ -53,3 +53,41 @@ Tugas/Latihan Mata Kuliah PW II
 
 ### 2. Top 5 buku dengan harga tertinggi
 ![Query 2](screenshot/laporankhusus_querytermahal.jpeg)
+
+### hasil query tugas 2
+
+### struktur tabel
+### 1. buku
+![Query 2](screenshot/strukturbuku.png)
+
+### 2. kategori buku
+![Query 2](screenshot/strukturkategori.png)
+
+### 3. penerbit
+![Query 2](screenshot/strukturpenerbit.png)
+
+### data tabel
+### 1. data buku
+![Query 2](screenshot/databuku.jpeg)
+
+### 2. data kategori
+![Query 2](screenshot/datakategoribuku.png)
+
+### 3. data penerbit
+![Query 2](screenshot/datapenerbit.png)
+
+### hasil join
+### 1. JOIN untuk tampilkan buku dengan nama kategori dan penerbit
+![Query 2](screenshot/1jointampilkanbuku.png)
+
+### 2. Jumlah buku per kategori
+![Query 2](screenshot/jumlahbukukategori.png)
+
+### 3. Jumlah buku per penerbit
+![Query 2](screenshot/jumlahbukupenerbit.png)
+
+### 4. Buku beserta detail lengkap (kategori + penerbit)
+![Query 2](screenshot/bukudetaillengkap.jpeg)
+
+### ERD
+![Query 2](screenshot/ERD%20tabel.drawio.png)
